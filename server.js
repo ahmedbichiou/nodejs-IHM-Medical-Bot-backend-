@@ -75,12 +75,13 @@ app.get('/api/patients', async (req, res) => {
   }
 });
 app.post('/api/patients', async (req, res) => {
-  const { name, id } = req.body; // Get the name and id from the request body
+  const { name, id,descirption } = req.body; // Get the name and id from the request body
 
   // Create a new patient
   const newPatient = new Patient({
     name,
     id,
+    descirption,
   });
 
   try {
@@ -90,6 +91,35 @@ app.post('/api/patients', async (req, res) => {
     res.status(400).json({ message: error.message }); // Handle errors
   }
 });
+
+app.get('/api/patients/:id', async (req, res) => {
+  try {
+    const patientId = req.params.id; // Get the ID from the request parameters
+    const patient = await Patient.findOne({ id: patientId }); // Query the database
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' }); // Handle not found
+    }
+    res.json(patient); // Return the patient data
+  } catch (error) {
+    console.error('Error fetching patient:', error);
+    res.status(500).json({ message: 'Internal server error' }); // Handle server error
+  }
+});
+app.delete('/api/patients/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Get the id from the URL parameters
+    const deletedPatient = await Patient.findOneAndDelete({ id }); // Use the custom id field
+
+    if (!deletedPatient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    res.status(200).json({ message: 'Patient deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
