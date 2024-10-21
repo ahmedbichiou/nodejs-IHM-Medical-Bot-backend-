@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const Capsule = require('./models/Capsule');
-
+const Patient = require('./models/Patient');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -65,7 +65,31 @@ app.post('/api/capsules', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+// API Route to get all patients
+app.get('/api/patients', async (req, res) => {
+  try {
+    const patients = await Patient.find();
+    res.json(patients);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+app.post('/api/patients', async (req, res) => {
+  const { name, id } = req.body; // Get the name and id from the request body
 
+  // Create a new patient
+  const newPatient = new Patient({
+    name,
+    id,
+  });
+
+  try {
+    const savedPatient = await newPatient.save(); // Save the new patient to the database
+    res.status(201).json(savedPatient); // Return the newly created patient
+  } catch (error) {
+    res.status(400).json({ message: error.message }); // Handle errors
+  }
+});
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
