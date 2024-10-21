@@ -75,13 +75,13 @@ app.get('/api/patients', async (req, res) => {
   }
 });
 app.post('/api/patients', async (req, res) => {
-  const { name, id,descirption } = req.body; // Get the name and id from the request body
+  const { name, id,description } = req.body; // Get the name and id from the request body
 
   // Create a new patient
   const newPatient = new Patient({
     name,
     id,
-    descirption,
+    description,
   });
 
   try {
